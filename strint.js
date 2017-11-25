@@ -208,10 +208,12 @@ function Strint(input){
 		}
 
 		this.add = function(adder){
+			if(!(adder instanceof Strint)) throw 'Parameter not of type Strint';
 			var copy = this.clone();
+			var copyAdder = adder.clone();
 
-			var maxWholes = Math.max(copy.wholes.length, adder.wholes.length);
-			var maxDecimals = Math.max(copy.decimals.length, adder.decimals.length);
+			var maxWholes = Math.max(copy.wholes.length, copyAdder.wholes.length);
+			var maxDecimals = Math.max(copy.decimals.length, copyAdder.decimals.length);
 
 			//Extend all arrays to the same length
 			if(copy.wholes.length < maxWholes){
@@ -219,9 +221,9 @@ function Strint(input){
 					copy.wholes.push(0);
 				}
 			}
-			if(adder.wholes.length < maxWholes){
-				for(var i=maxWholes-adder.wholes.length; i>=0; i--){
-					adder.wholes.push(0);
+			if(copyAdder.wholes.length < maxWholes){
+				for(var i=maxWholes-copyAdder.wholes.length; i>=0; i--){
+					copyAdder.wholes.push(0);
 				}
 			}
 			if(copy.decimals.length < maxDecimals){
@@ -229,18 +231,18 @@ function Strint(input){
 					copy.decimals.push(0);
 				}
 			}
-			if(adder.decimals.length < maxDecimals){
-				for(var i=maxDecimals-adder.decimals.length; i>=0; i--){
-					adder.decimals.push(0);
+			if(copyAdder.decimals.length < maxDecimals){
+				for(var i=maxDecimals-copyAdder.decimals.length; i>=0; i--){
+					copyAdder.decimals.push(0);
 				}
 			}
 
 			//Add everything up
 			for(var i=0; i<maxWholes; i++){
-				copy.wholes[i] += adder.wholes[i];
+				copy.wholes[i] += copyAdder.wholes[i];
 			}
 			for(var i=0; i<maxDecimals; i++){
-				copy.decimals[i] += adder.decimals[i];
+				copy.decimals[i] += copyAdder.decimals[i];
 			}
 
 			//Make sure all digits are single digits
@@ -248,10 +250,89 @@ function Strint(input){
 		}
 
 		this.subtract = function(subber){
+			if(!(subber instanceof Strint)) throw 'Parameter not of type Strint';
 			return this.add(subber.negate());
+		}
+
+		this.multiply = function(mult){
+			if(!(mult instanceof Strint)) throw 'Parameter not of type Strint';
+			var copy = this.clone();
+			var copyMult = mult.clone();
+
+			var maxWholes = Math.max(copy.wholes.length, copyMult.wholes.length);
+			var maxDecimals = Math.max(copy.decimals.length, copyMult.decimals.length);
+
+			//Extend all arrays to the same length
+			if(copy.wholes.length < maxWholes){
+				for(var i=maxWholes-copy.wholes.length; i>=0; i--){
+					copy.wholes.push(0);
+				}
+			}
+			if(copyMult.wholes.length < maxWholes){
+				for(var i=maxWholes-copyMult.wholes.length; i>=0; i--){
+					copyMult.wholes.push(0);
+				}
+			}
+			if(copy.decimals.length < maxDecimals){
+				for(var i=maxDecimals-copy.decimals.length; i>=0; i--){
+					copy.decimals.push(0);
+				}
+			}
+			if(copyMult.decimals.length < maxDecimals){
+				for(var i=maxDecimals-copyMult.decimals.length; i>=0; i--){
+					copyMult.decimals.push(0);
+				}
+			}
+
+
+		}
+
+		this.equals = function(number){
+			if(!(number instanceof Strint)) throw 'Parameter not of type Strint';
+
+			var zero = new Strint("0");
+			var sub = this.subtract(number);
+			return sub.wholes.length == 0 && sub.decimals.length == 0;
+		}
+
+		this.greaterThan = function(number){
+			if(!(number instanceof Strint)) throw 'Parameter not of type Strint';
+
+			var sub = this.subtract(number);
+
+			return !(sub.wholes[sub.wholes.length-1] < 0 || sub.decimals[sub.decimals.length-1] < 0) && !(sub.wholes.length == 0 && sub.decimals.length == 0);
+		}
+
+		this.lessThan = function(number){
+			if(!(number instanceof Strint)) throw 'Parameter not of type Strint';
+
+			var sub = this.subtract(number);
+
+			return (sub.wholes[sub.wholes.length-1] < 0 || sub.decimals[sub.decimals.length-1] < 0) && !(sub.wholes.length == 0 && sub.decimals.length == 0);
+		}
+
+		this.greaterThanOrEqual = function(number){
+			return !this.lessThan(number);
+		}
+
+		this.lessThanOrEqual = function(number){
+			return !this.greaterThan(number);
+		}
+
+		//Shifts (or multiplies by a power of 10) Strint. positive is left, negative is right (think 10^amount)
+		this.shift = function(amount){
+			if(!(amount instanceof Strint)) throw 'Parameter not of type Strint';
+			var move = 1;
+			if(amount.lessThan(new Strint("0"))){
+				move = -1;
+			}
 		}
 
 	}else{
 		throw "Not a valid number.";
 	}
 }
+
+var test = new Strint("0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006");
+
+console.log(test.add(new Strint("0.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000003216754751232757")).toString())
