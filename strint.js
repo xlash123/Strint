@@ -247,6 +247,10 @@ function Strint(input){
 			return validate(copy);
 		}
 
+		this.subtract = function(subber){
+			return this.add(subber.negate());
+		}
+
 	}else{
 		throw "Not a valid number.";
 	}
