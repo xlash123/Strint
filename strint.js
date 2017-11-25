@@ -1,6 +1,7 @@
 //Creates a number stored as a string for better arithmatic precision
 function Strint(input){
-	const format = /^([-]|[+])?\d+([.]\d*)*$/g;
+	input = '' + input;
+	const format = /^([-+]?\d+(\.\d*)?|\.\d+)$/g;
 	if(format.test(input)){		//Values are stored as whole integers either as a whole or a decimal.
 		//[0] represents the ones, [1] represents the tens, etc.
 		this.wholes = [];
@@ -121,33 +122,29 @@ function Strint(input){
 			}
 			if(zeroIndex !== -1) strint.decimals.splice(zeroIndex, strint.decimals.length-zeroIndex);
 
-			//It has to be 0
+			//It has to be 0, which is valid
 			if(allPos && allNeg) return strint;
 
-			var allSameSign = allPos || allNeg;
+			console.log(strint)
 
-			if(!allSameSign){
-				//If the leading nonzero number is negative, I have to negate the expression for the validation algorithm to work, then negate the final answer.
-				var isLeadingNegative = false;
-				if(strint.wholes.length > 0){
-					isLeadingNegative = strint.wholes[strint.wholes.length-1] < 0;
-				}else{
-					for(var i=0; i<strint.decimals.length; i++){
-						var num = strint.decimals[i];
-						if(num !== 0){
-							isLeadingNegative = num < 0;
-							break;
-						}
+			//If the leading nonzero number is negative, I have to negate the expression for the validation algorithm to work, then negate the final answer.
+			var isLeadingNegative = false;
+			if(strint.wholes.length > 0){
+				isLeadingNegative = strint.wholes[strint.wholes.length-1] < 0;
+			}else{
+				for(var i=0; i<strint.decimals.length; i++){
+					var num = strint.decimals[i];
+					if(num !== 0){
+						isLeadingNegative = num < 0;
+						break;
 					}
 				}
-				if(isLeadingNegative){
-					return validate(strint.negate()).negate();
-				}
 			}
-			else if(allNeg){
-				//Validation method only works with positive numbers, so negate it to validate then negate the result.
+			if(isLeadingNegative){
 				return validate(strint.negate()).negate();
 			}
+
+			console.log(strint)
 
 			//Main part of the validation. It carries over into the other places to make it a normal base 10 number
 			var carry = 0;
@@ -251,9 +248,3 @@ function Strint(input){
 		throw "Not a valid number.";
 	}
 }
-
-var testNum = new Strint("-213997548");
-
-var result = testNum.add(new Strint("128466838"));
-
-console.log(result.toString());
