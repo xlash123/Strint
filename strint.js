@@ -70,16 +70,24 @@ function Strint(input){
 			return ret;
 		}
 
+		this.clone = function(){
+			var copy = new Strint("0");
+			copy.wholes = this.wholes.slice(0);
+			copy.decimals = this.decimals.slice(0);
+			return copy;
+		}
+
 		//Returns the strint with every digit negated.
 		this.negate = function(){
-			for(var i=0; i<this.wholes.length; i++){
-				this.wholes[i] *= -1;
+			var copy = this.clone();
+			for(var i=0; i<copy.wholes.length; i++){
+				copy.wholes[i] *= -1;
 			}
-			for(var i=0; i<this.decimals.length; i++){
-				this.decimals[i] *= -1;
+			for(var i=0; i<copy.decimals.length; i++){
+				copy.decimals[i] *= -1;
 			}
 
-			return this;
+			return copy;
 		}
 
 		//Turns a strint that has non-single-digit values in its arrays into a valid strint
@@ -200,7 +208,7 @@ function Strint(input){
 		}
 
 		this.add = function(adder){
-			var copy = new Strint(this.toString());
+			var copy = this.clone();
 
 			var maxWholes = Math.max(copy.wholes.length, adder.wholes.length);
 			var maxDecimals = Math.max(copy.decimals.length, adder.decimals.length);
