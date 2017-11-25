@@ -72,15 +72,14 @@ function Strint(input){
 
 		//Returns the strint with every digit negated.
 		this.negate = function(){
-			var copy = new Strint(this.toString());
 			for(var i=0; i<this.wholes.length; i++){
-				copy.wholes[i] *= -1;
+				this.wholes[i] *= -1;
 			}
 			for(var i=0; i<this.decimals.length; i++){
-				copy.decimals[i] *= -1;
+				this.decimals[i] *= -1;
 			}
 
-			return copy;
+			return this;
 		}
 
 		//Turns a strint that has non-single-digit values in its arrays into a valid strint
@@ -125,8 +124,6 @@ function Strint(input){
 			//It has to be 0, which is valid
 			if(allPos && allNeg) return strint;
 
-			console.log(strint)
-
 			//If the leading nonzero number is negative, I have to negate the expression for the validation algorithm to work, then negate the final answer.
 			var isLeadingNegative = false;
 			if(strint.wholes.length > 0){
@@ -143,8 +140,6 @@ function Strint(input){
 			if(isLeadingNegative){
 				return validate(strint.negate()).negate();
 			}
-
-			console.log(strint)
 
 			//Main part of the validation. It carries over into the other places to make it a normal base 10 number
 			var carry = 0;
